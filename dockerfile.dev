@@ -1,0 +1,11 @@
+FROM node:latest as api-dev
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install
+
+EXPOSE 80
+
+CMD npm run dev

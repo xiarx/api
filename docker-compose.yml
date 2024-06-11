@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    env_file: .env
+    environment:
+      - POSTGRES_USER=$DATABASE_USER
+      - POSTGRES_PASSWORD=$DATABASE_PASSWORD
+      - POSTGRES_DB=$DATABASE_NAME
+    ports:
+      - $DATABASE_PORT:5432
+    volumes:
+      - data:/var/lib/postgres
+  api:
+    depends_on:
+      - postgres
+    build:
+      context: .
+      dockerfile: dockerfile.dev
+    restart: always
+    env_file: .env
+    ports:
+      - $PORT:$PORT
+    environment:
+      - DATABASE_HOST=postgres
+      - DATBASE_USER=$DATABASE_USER
+      - DATABASE_PASSWORD=$DATABASE_PASSWORD
+      - DATABASE_NAME=$DATABASE_NAME
+      - DATABASE_PORT=$DATABASE_PORT
+    stdin_open: true
+    tty: true
+volumes: 
+  data:

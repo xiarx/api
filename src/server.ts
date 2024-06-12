@@ -7,7 +7,6 @@ import type {Express, Request, Response, NextFunction} from 'express'
 import router from './router.js'
 
 const server: Express = express()
-
 // Smaller response body
 server.use(compression())
 

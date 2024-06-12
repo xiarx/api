@@ -2,18 +2,41 @@ import {PrismaClient} from '@prisma/client'
 
 import type {Request, Response} from 'express'
 
+import type {User} from '../types.js'
+
+/**
+ * @openapi
+ * /users:
+ *   get:
+ *     description: Get all users
+ *     responses:
+ *       200:
+ *         description: An array of all users
+ */
 export const get = async (request: Request, response: Response) => {
   const prisma = await new PrismaClient
 
-  const users = await prisma.user.findMany()
+  const users: User[] = await prisma.user.findMany()
 
   response.status(200).json(JSON.stringify(users))
 }
 
+/**
+ * @openapi
+ * /users/{id}:
+ *   get:
+ *     description: Get a user by ID
+ *     parameters:
+ *       - in: path
+ *         id: User UUID string
+ *     responses:
+ *       200:
+ *         description: A User object
+ */
 export const getById = async (request: Request, response: Response) => {
   const prisma = await new PrismaClient
 
-  const user = await prisma.user.findUnique({
+  const user: User = await prisma.user.findUnique({
     where: {
       id: request.params.id,
     },
@@ -28,14 +51,38 @@ export interface Post {
   last_name: string
 }
 
+/**
+ * @openapi
+ * /users:
+ *   post:
+ *     description: Create a new user
+ *     parameters:
+ *       - in: body
+ *         schema:
+ *           required:
+ *             - username
+ *             - first_name
+ *             - last_name
+ *           properties:
+*              username:
+*                type: string
+*              first_name:
+*                type: string
+*              last_name:
+*                type: string
+ *     responses:
+ *       200:
+ *         description: Empty
+ */
 export const post = async (request: Request, response: Response) => {
   const prisma = await new PrismaClient
 
+  // request should contain all values
   if (!request.body.username || !request.body.first_name || !request.body.last_name) {
     response.status(400).send('Bad request')
   }
 
-  let user
+  let user: User
 
   try {
     user = await prisma.user.create({
@@ -58,9 +105,31 @@ export interface Put {
   last_name?: string
 }
 
+/**
+ * @openapi
+ * /users/{id}:
+ *   put:
+ *     description: Update an existing user
+ *     parameters:
+ *       - in: path
+ *         id: A user UUID string
+ *       - in: body
+ *         schema:
+ *           properties:
+*              username:
+*                type: string
+*              first_name:
+*                type: string
+*              last_name:
+*                type: string
+ *     responses:
+ *       200:
+ *         description: Empty
+ */
 export const put = async (request: Request, response: Response) => {
   const prisma = await new PrismaClient
 
+  // request should contain at least 1 value
   if (!request.body.username && !request.body.first_name && !request.body.last_name) {
     response.status(400).send('Bad request')
   }
@@ -79,6 +148,7 @@ export const put = async (request: Request, response: Response) => {
     data.last_name = request.body.last_name
   }
 
+  // if invalid user_id
   try {
     await prisma.user.update({
       where: {

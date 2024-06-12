@@ -1,6 +1,7 @@
 datasource source {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DATABASE_DIRECT_URL")
 }
 
 generator client {
@@ -25,6 +26,8 @@ model Task {
   name String @unique
   description String
   date_time DateTime
+  status String @default("pending")
+  next_execute_date DateTime @default(now())
   user_id String
   user User @relation(fields: [user_id], references: [id])
 }

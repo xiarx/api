@@ -24,6 +24,8 @@ services:
     ports:
       - $PORT:$PORT
     environment:
+      - DATABASE_URL=$DATABASE_URL
+      - DATABASE_DIRECT_URL=$DATABASE_DIRECT_URL
       - DATABASE_HOST=postgres
       - DATBASE_USER=$DATABASE_USER
       - DATABASE_PASSWORD=$DATABASE_PASSWORD

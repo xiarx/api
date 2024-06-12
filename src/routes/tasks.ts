@@ -1,8 +1,8 @@
-import {PrismaClient} from '@prisma/client'
+import { PrismaClient } from "@prisma/client";
 
-import type {Request, Response} from 'express'
+import type { Request, Response } from "express";
 
-import type {Task} from '../types.js'
+import type { Task } from "../types.js";
 
 /**
  * @openapi
@@ -17,16 +17,16 @@ import type {Task} from '../types.js'
  *         description: An array of tasks
  */
 export const get = async (request: Request, response: Response) => {
-  const prisma = await new PrismaClient
+  const prisma = await new PrismaClient();
 
   const tasks: Task[] = await prisma.task.findMany({
     where: {
       user_id: request.params.id,
     },
-  })
+  });
 
-  response.status(200).json(JSON.stringify(tasks))
-}
+  response.status(200).json(JSON.stringify(tasks));
+};
 
 /**
  * @openapi
@@ -42,22 +42,22 @@ export const get = async (request: Request, response: Response) => {
  *         description: A task object
  */
 export const getById = async (request: Request, response: Response) => {
-  const prisma = await new PrismaClient
+  const prisma = await new PrismaClient();
 
   const task: Task = await prisma.task.findUnique({
     where: {
       user_id: request.params.id,
       id: request.params.taskId,
     },
-  })
+  });
 
-  response.status(200).json(JSON.stringify(task))
-}
+  response.status(200).json(JSON.stringify(task));
+};
 
 export interface Post {
-  name: string
-  description: string
-  date_time: string
+  name: string;
+  description: string;
+  date_time: string;
 }
 
 /**
@@ -75,33 +75,37 @@ export interface Post {
  *             - description
  *             - date_time
  *           properties:
-*              name:
-*                type: string
-*              description:
-*                type: string
-*              date_time:
-*                type: string
+ *              name:
+ *                type: string
+ *              description:
+ *                type: string
+ *              date_time:
+ *                type: string
  *     responses:
  *       200:
  *         description: A new task ID
  */
 export const post = async (request: Request, response: Response) => {
-  const prisma = await new PrismaClient
+  const prisma = await new PrismaClient();
 
   // request should contain all values
-  if (!request.body.name || !request.body.description || !request.body.date_time) {
-    response.status(400).send('Bad request')
+  if (
+    !request.body.name ||
+    !request.body.description ||
+    !request.body.date_time
+  ) {
+    response.status(400).send("Bad request");
   }
 
-  let date: Date
+  let date: Date;
 
   try {
-    date = new Date(request.body.date_time)
+    date = new Date(request.body.date_time);
   } catch (error: unknown) {
-    response.status(400).send('Bad request')
+    response.status(400).send("Bad request");
   }
 
-  let task: Task
+  let task: Task;
 
   try {
     task = await prisma.task.create({
@@ -111,18 +115,18 @@ export const post = async (request: Request, response: Response) => {
         date_time: date,
         user_id: request.params.id,
       },
-    })
+    });
   } catch (error: unknown) {
-    response.status(400).send('Request failed')
+    response.status(400).send("Request failed");
   }
 
-  response.status(200).json(JSON.stringify({id: task.id}))
-}
+  response.status(200).json(JSON.stringify({ id: task.id }));
+};
 
 export interface Put {
-  name?: string
-  description?: string
-  date_time?: Date
+  name?: string;
+  description?: string;
+  date_time?: Date;
 }
 
 /**
@@ -137,40 +141,44 @@ export interface Put {
  *       - in: body
  *         schema:
  *           properties:
-*              name:
-*                type: string
-*              description:
-*                type: string
-*              date_time:
-*                type: string
+ *              name:
+ *                type: string
+ *              description:
+ *                type: string
+ *              date_time:
+ *                type: string
  *     responses:
  *       200:
  *         description: A new task ID
  */
 export const put = async (request: Request, response: Response) => {
-  const prisma = await new PrismaClient
+  const prisma = await new PrismaClient();
 
   // request should at least contain one thing
-  if (!request.body.name && !request.body.description && !request.body.date_time) {
-    response.status(400).send('Bad request')
+  if (
+    !request.body.name &&
+    !request.body.description &&
+    !request.body.date_time
+  ) {
+    response.status(400).send("Bad request");
   }
 
-  const data = {} as Put
+  const data = {} as Put;
 
   if (request.body.name) {
-    data.name = request.body.name
+    data.name = request.body.name;
   }
 
   if (request.body.description) {
-    data.description = request.body.description
+    data.description = request.body.description;
   }
 
   // if invalid date given
   if (request.body.date_time) {
     try {
-      data.date_time = new Date(request.body.date_time)
+      data.date_time = new Date(request.body.date_time);
     } catch (error: unknown) {
-      response.status(400).send('Bad request')
+      response.status(400).send("Bad request");
     }
   }
 
@@ -183,15 +191,15 @@ export const put = async (request: Request, response: Response) => {
       },
       data: {
         ...data,
-        updatedAt: new Date,
+        updatedAt: new Date(),
       },
-    })
+    });
   } catch (error: unknown) {
-    response.status(400).send('Request failed')
+    response.status(400).send("Request failed");
   }
 
-  response.status(200).end()
-}
+  response.status(200).end();
+};
 
 /**
  * @openapi
@@ -207,7 +215,7 @@ export const put = async (request: Request, response: Response) => {
  *         description: Empty
  */
 export const remove = async (request: Request, response: Response) => {
-  const prisma = await new PrismaClient
+  const prisma = await new PrismaClient();
 
   // if invalid task_id
   try {
@@ -216,14 +224,18 @@ export const remove = async (request: Request, response: Response) => {
         id: request.params.taskId,
         user_id: request.params.id,
       },
-    })
+    });
   } catch (error: unknown) {
-    response.status(400).send('Request failed')
+    response.status(400).send("Request failed");
   }
 
-  response.status(200).end()
-}
+  response.status(200).end();
+};
 
 export default {
-  get, getById, post, put, remove
-}
+  get,
+  getById,
+  post,
+  put,
+  remove,
+};

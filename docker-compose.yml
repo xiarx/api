@@ -5,12 +5,12 @@ services:
     image: postgres:latest
     restart: always
     env_file: .env
+    ports:
+      - $DATABASE_PORT:5432
     environment:
       - POSTGRES_USER=$DATABASE_USER
       - POSTGRES_PASSWORD=$DATABASE_PASSWORD
       - POSTGRES_DB=$DATABASE_NAME
-    ports:
-      - $DATABASE_PORT:5432
     volumes:
       - data:/var/lib/postgres
   api:
@@ -29,6 +29,8 @@ services:
       - DATABASE_PASSWORD=$DATABASE_PASSWORD
       - DATABASE_NAME=$DATABASE_NAME
       - DATABASE_PORT=$DATABASE_PORT
+    volumes:
+      - .:/app
     stdin_open: true
     tty: true
 volumes: 

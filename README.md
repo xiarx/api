@@ -40,6 +40,10 @@ OR
 
 > All documentation can be found at localhost:4000/api/v1
 
+### Migrations
+
+- `npm run migrate` (after connecting to your database)
+
 ## Project Structure
 
 - src - All core app components like the router goes in the root directory of src.

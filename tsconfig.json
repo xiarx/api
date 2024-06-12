@@ -6,7 +6,8 @@
     "target": "ESNext",
     "allowJs": true,
     "moduleResolution": "nodenext",
-    "outDir": "lib"
+    "outDir": "lib",
+    "resolveJsonModule": true
   },
   "include": ["src/**/*.ts"]
 }

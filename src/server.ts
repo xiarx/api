@@ -8,10 +8,16 @@ import router from './router.js'
 
 const server: Express = express()
 
+// Smaller response body
 server.use(compression())
+
+// Security
 server.use(helmet())
+
+// Reduce digital fingerprint
 server.disable('x-powered-by')
 
+// JSON options and request body verification
 server.use(express.json({
   inflate: false,
   limit: '100kb',
@@ -26,6 +32,7 @@ server.use(express.json({
   },
 }))
 
+// Prevent open redirect attacks
 server.use((request: Request, response: Response, next: NextFunction) => {
   if (request.query.url) {
     try {
@@ -42,12 +49,20 @@ server.use((request: Request, response: Response, next: NextFunction) => {
   }
 })
 
-server.use(router)
+// Server health
+server.get('/health', (request: Request, response: Response) => {
+  response.status(200).send('healthy')
+})
 
+// Application routes
+server.use('/api', router)
+
+// 404 handler
 server.use((request: Request, response: Response, next: NextFunction) => {
   response.status(404).send('Not found')
 })
 
+// Error handler
 server.use((error: Error, request: Request, response: Response, next: NextFunction) => {
   console.error(error.stack)
   response.status(500).send('Server error')
